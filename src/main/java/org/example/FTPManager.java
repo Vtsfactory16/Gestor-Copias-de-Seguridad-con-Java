@@ -6,11 +6,10 @@ import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class FTPManager {
-    private FTPClient clienteFTP;
+    private final FTPClient clienteFTP;
     private static final String SERVIDOR = "localhost";
     private static final int PUERTO = 21;
     private static final String USUARIO = "root";
@@ -46,10 +45,11 @@ public class FTPManager {
         File ficheroLocal = new File(pathLocal);
         String nombreFichero = ficheroLocal.getName();
         InputStream is = new FileInputStream(ficheroLocal);
-        boolean subido = clienteFTP.storeFile(nombreFichero, is);
+        boolean subido = clienteFTP.storeFile("D:\\FTP\\" + nombreFichero, is); // Concatenamos la ruta remota deseada
         is.close();
         return subido;
     }
+
 
     public boolean descargarArchivo(String ficheroRemoto, String pathLocal) throws IOException {
         OutputStream os = new FileOutputStream(pathLocal);
@@ -111,13 +111,5 @@ public class FTPManager {
         }
         zis.closeEntry();
         zis.close();
-    }
-    public String[] listarArchivosRemotos() throws IOException {
-        FTPFile[] archivos = clienteFTP.listFiles();
-        String[] nombresArchivos = new String[archivos.length];
-        for (int i = 0; i < archivos.length; i++) {
-            nombresArchivos[i] = archivos[i].getName();
-        }
-        return nombresArchivos;
     }
 }
