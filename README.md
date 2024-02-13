@@ -2,9 +2,7 @@
 
 
 
-## Uso
-1. Configura el servidor FTP en la clase `FTPManager`.
-2. Ejecuta `Main.java` para realizar las operaciones de copia de seguridad y sincronización.
+
 
 ## Requisitos
 - Java JDK 17 o superior
