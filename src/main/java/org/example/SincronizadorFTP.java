@@ -1,5 +1,7 @@
 package org.example;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,7 +15,7 @@ public class SincronizadorFTP {
     private static final String CONTRASENA = "Admin1.";
     private static final String CARPETA_LOCAL = "D:\\FTP";
     private static final String CARPETA_REMOTA = "C:\\FTP";
-    private static final long TIEMPO_REFRESCO = 30000; // 30 segundos
+    private static final long TIEMPO_REFRESCO = 15000; // 30 segundos
 
     public static void main(String[] args) throws IOException {
         while (true) {
@@ -40,7 +42,7 @@ public class SincronizadorFTP {
             }
         }
       for (String archivoLocal : archivosLocales) {
-            if (!archivosRemotos.contains(archivoLocal)) {
+            if (!archivosRemotos.contains(archivoLocal) || esArchivoActualizado(clienteFTP, CARPETA_REMOTA, archivoLocal, new File(CARPETA_LOCAL + File.separator + archivoLocal).lastModified())) {
                 addArchivo(clienteFTP, archivoLocal);
             }
         }
@@ -78,4 +80,18 @@ public class SincronizadorFTP {
         clienteFTP.storeFile(archivo, fis);
         fis.close();
     }
+    private static boolean esArchivoActualizado(FTPClient clienteFTP, String carpetaRemota, String nombreArchivo, long ultimaModificacionLocal) throws IOException {
+        clienteFTP.changeWorkingDirectory(carpetaRemota);
+        FTPFile[] archivosRemotos = clienteFTP.listFiles();
+
+        for (FTPFile archivoRemoto : archivosRemotos) {
+            if (archivoRemoto.getName().equals(nombreArchivo)) {
+                long ultimaModificacionRemota = archivoRemoto.getTimestamp().getTimeInMillis();
+                return ultimaModificacionLocal > ultimaModificacionRemota;
+            }
+        }
+
+        return false;
+    }
+
 }
